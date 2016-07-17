@@ -175,25 +175,43 @@ ggpairs(red_wine ,lower = list(continuous = wrap("points", shape = I('.'))),
 ```{r echo=FALSE}
 
 ggplot(data=red_wine,aes(x=quality,y=alcohol))+
-  geom_boxplot(stat='boxplot',aes(group=quality))
+  geom_boxplot(stat='boxplot',aes(group=quality))+
+  ggtitle('Box Plot Quality by Alcohol')+
+  xlab('Quality')+
+  ylab('Alcohol % by Volume')
 
 ggplot(data=red_wine,aes(x=quality,y=volatile.acidity))+
-  geom_boxplot(stat='boxplot',aes(group=quality))
+  geom_boxplot(stat='boxplot',aes(group=quality))+
+  ggtitle('Box Plot Quality by Volatile Acidity')+
+  xlab('Quality')+
+  ylab('Volatile Acidity g / dm^3')
 
 ggplot(data=red_wine,aes(x=quality,y=sulphates))+
-  geom_boxplot(stat='boxplot',aes(group=quality))
+  geom_boxplot(stat='boxplot',aes(group=quality))+
+  ggtitle('Box Plot Quality by Sulphates')+
+  xlab('Quality')+
+  ylab('Sulphates g / dm^3')
 
 ggplot(data=red_wine,aes(x=quality,y=citric.acid))+
-  geom_boxplot(stat='boxplot',aes(group=quality))
+  geom_boxplot(stat='boxplot',aes(group=quality))+
+  ggtitle('Box Plot Quality by Citric Acid')+
+  xlab('Quality')+
+  ylab('Citric Acid g / dm^3')
 
 #between pH and other fixed.acidity and citric.acid
 ggplot(data=red_wine,aes(x=pH,y=citric.acid))+
   geom_point()+
-  geom_smooth(method='lm')
+  geom_smooth(method='lm')+
+  ggtitle('pH Vs Citric Acid')+
+  xlab('pH')+
+  ylab('Citric Acid g / dm^3')
 
 ggplot(data=red_wine,aes(x=pH,y=fixed.acidity))+
   geom_point()+
-  geom_smooth(method='lm')
+  geom_smooth(method='lm')+
+  ggtitle('pH Vs Fixed Acidity')+
+  xlab('pH')+
+  ylab('Fixed Acidity g / dm^3')
 ```
 
 # Bivariate Analysis
@@ -227,13 +245,22 @@ pH and Fixed.Acidity<br>
 ```{r echo=FALSE, Multivariate_Plots}
 
 ggplot(data=red_wine,aes(x=alcohol,y=volatile.acidity,colour=quality))+
-  geom_point()
+  geom_point()+
+  ggtitle('Quality By Alcohol and Volatile Acidity')+
+  xlab('Alcohol % by Volume')+
+  ylab('Volatile Acidity g / dm^3')
 
 ggplot(data=red_wine,aes(x=alcohol,y=citric.acid,colour=quality))+
-  geom_point()
+  geom_point()+
+  ggtitle('Quality By Alcohol and Citric Acid')+
+  xlab('Alcohol % by Volume')+
+  ylab('Citric Acid g / dm^3')
 
 ggplot(data=red_wine,aes(x=volatile.acidity,y=citric.acid,colour=quality))+
-  geom_point()
+  geom_point()+
+  ggtitle('Quality By Alcohol and Citric Acid')+
+  xlab('Volatile Acidity g / dm^3')+
+  ylab('Citric Acid g / dm^3')
 
 
 ```
@@ -243,7 +270,10 @@ Now we can see the realtions between Quality and the other variables which effec
 ```{r echo=FALSE}
 red_wine_sub=subset(red_wine,red_wine$quality!=5 &red_wine$quality!=6)
 ggplot(data=red_wine_sub,aes(x=alcohol,y=volatile.acidity,colour=quality))+
-  geom_point()
+  geom_point()+
+   ggtitle('Wine Samples Quality By Alcohol and Volatile Acidity')+
+  xlab('Alcohol % By Volume')+
+  ylab('Volatile Acidity g / dm^3')
 ```
 
 Now from the visualization its clear that the lower-right corner samples are of high quality and the upper-right part samples are of low quality .
@@ -251,9 +281,16 @@ Now from the visualization its clear that the lower-right corner samples are of 
 ```{r echo=FALSE}
 
 ggplot(data=red_wine_sub,aes(x=alcohol,y=citric.acid,colour=quality))+
-  geom_point()
+  geom_point()+
+   ggtitle('Wine Samples Quality By Citric Acid And Alcohol ')+
+  xlab('Alcohol % By Volume')+
+  ylab('Citric Acid g / dm^3')
+
 ggplot(data=red_wine_sub,aes(x=alcohol,y=sulphates,colour=quality))+
-  geom_point()
+  geom_point()+
+  ggtitle('Wine Samples Quality By Sulphates And Alcohol ')+
+  xlab('Alcohol % By Volume')+
+  ylab('Sulphates g / dm^3')
 
 ```
 
@@ -261,10 +298,19 @@ Now lets draw two visualization to relate Quality-Citric.Acid-Alcohol-Volatile.A
 
 ```{r echo=FALSE}
 
-ggplot(data=red_wine_sub,aes(x=alcohol,y=citric.acid,colour=quality,size=volatile.acidity))+
-  geom_point()
-ggplot(data=red_wine_sub,aes(x=alcohol,y=sulphates,colour=quality,size=volatile.acidity))+
-  geom_point()
+ggplot(data=red_wine_sub,
+  aes(x=alcohol,y=citric.acid,colour=quality,size=volatile.acidity))+
+  geom_point()+
+  ggtitle('Wine Samples Quality By Citric Acid Alcohol and Volatile Acidity')+
+  xlab('Alcohol % By Volume')+
+  ylab('Citric Acid g / dm^3')
+
+ggplot(data=red_wine_sub,
+  aes(x=alcohol,y=sulphates,colour=quality,size=volatile.acidity))+
+  geom_point()+
+  ggtitle('Wine Samples Quality By Sulphates Alcohol and Volatile Acidity')+
+  xlab('Alcohol % By Volume')+
+  ylab('Sulphates g / dm^3')
 
 ```
 
@@ -289,7 +335,8 @@ With much high level of Alcohol and low level of Citric.Acid some of the samples
 ```{r echo=FALSE, Plot_One}
 ggplot(aes(x=quality,fill=quality),data = red_wine)+
   geom_bar()+
-  ggtitle('Frequency of Quality ')
+  ggtitle('Frequency of Quality ')+
+  xlab('Quality')
 
 summary(red_wine$quality,group=quality)
 ```
@@ -302,25 +349,43 @@ In the total 1599 samples most of the samples were of medium quality. There were
 
 ```{r echo=FALSE, Plot_Two}
 p1=ggplot(data=red_wine,aes(x=quality,y=alcohol))+
-  geom_boxplot(stat='boxplot',aes(group=quality))
+  geom_boxplot(stat='boxplot',aes(group=quality))+
+  ggtitle('Box Plot Quality by Alcohol')+
+  xlab('Quality')+
+  ylab('Alcohol % by Volume')
 
 p2=ggplot(data=red_wine,aes(x=quality,y=volatile.acidity))+
-  geom_boxplot(stat='boxplot',aes(group=quality))
+  geom_boxplot(stat='boxplot',aes(group=quality))+
+  ggtitle('Box Plot Quality by Volatile Acidity')+
+  xlab('Quality')+
+  ylab('Volatile Acidity g / dm^3')
 
 p3=ggplot(data=red_wine,aes(x=quality,y=sulphates))+
-  geom_boxplot(stat='boxplot',aes(group=quality))
+  geom_boxplot(stat='boxplot',aes(group=quality))+
+  ggtitle('Box Plot Quality by Sulphates')+
+  xlab('Quality')+
+  ylab('Sulphates g / dm^3')
 
 p4=ggplot(data=red_wine,aes(x=quality,y=citric.acid))+
-  geom_boxplot(stat='boxplot',aes(group=quality))
+  geom_boxplot(stat='boxplot',aes(group=quality))+
+  ggtitle('Box Plot Quality by Citric Acid')+
+  xlab('Quality')+
+  ylab('Citric Acid g / dm^3')
 
 #between pH and other fixed.acidity and citric.acid
 p5=ggplot(data=red_wine,aes(x=pH,y=citric.acid))+
   geom_point()+
-  geom_smooth(method='lm')
+  geom_smooth(method='lm')+
+  ggtitle('pH Vs Citric Acid')+
+  xlab('pH')+
+  ylab('Citric Acid g / dm^3')
 
 p6=ggplot(data=red_wine,aes(x=pH,y=fixed.acidity))+
   geom_point()+
-  geom_smooth(method='lm')
+  geom_smooth(method='lm')+
+  ggtitle('pH Vs Fixed Acidity')+
+  xlab('pH')+
+  ylab('Fixed Acidity g / dm^3')
 
 grid.arrange(p1,p2,p3,p4,p5,p6,ncol=2)
 
@@ -336,11 +401,17 @@ The above plot shows the 4 main component that have high effects on the quality 
 ggplot(data=subset(
   red_wine_sub,red_wine_sub$quality!=7 & red_wine_sub$quality!=4),
   aes(x=alcohol,y=citric.acid,colour=quality,size=volatile.acidity))+
-  geom_point()
+  geom_point()+
+  ggtitle('The Best Vs The Worst Wine Samples')+
+  xlab('Alcohol % By Volume')+
+  ylab('Citric Acid g / dm^3')
 
 ggplot(data=red_wine_sub,
   aes(x=alcohol,y=citric.acid,colour=quality,size=volatile.acidity))+
-  geom_point()
+  geom_point()+
+  ggtitle('Wine Samples Quality By Citric Acid Alcohol and Volatile Acidity')+
+  xlab('Alcohol % By Volume')+
+  ylab('Citric Acid g / dm^3')
 ```
 
 ### Description Three
