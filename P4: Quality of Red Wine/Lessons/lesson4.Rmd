@@ -1,0 +1,107 @@
+---
+title: "Lesson4"
+author: "Arijit Mukherjee"
+date: "15 July 2016"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+pf=read.csv('pseudo_facebook.tsv',sep='\t')
+qplot(data=pf,x=age,y=friend_count)
+ggplot(aes(x=age,y=friend_count),data=pf)+
+  geom_jitter(alpha=1/20)+
+  xlim(13,90)+
+  coord_trans(x='log10')
+
+ggplot(aes(x=age,y=friendships_initiated),data=pf)+
+  geom_jitter(alpha=1/10,position = position_jitter(h=0))+
+  coord_trans(x='sqrt')
+```
+
+
+```{r}
+install.packages('dplyr')
+library(dplyr)
+age_groups=group_by(pf,age)
+pf.fc_by_age=summarise(age_groups,fc_mean=mean(friend_count),fc_median=median(friend_count),n=n())
+
+ggplot(aes(x=age,y=fc_mean),data=pf.fc_by_age)+
+  geom_line(alpha=1/2)
+```
+
+```{r}
+ggplot(aes(x=age,y=friend_count),data=pf)+
+  xlim(13,90)+
+  geom_jitter(alpha=1/10,position = position_jitter(h=0),color='red')+
+  coord_trans(y='sqrt')+
+  geom_line(stat='summary',fun.y=mean)+
+  geom_line(stat='summary',fun.y=quantile,fun.args=list(probs=0.1),linetype=2,color='blue')+
+  geom_line(stat='summary',fun.y=quantile,fun.args=list(probs=0.9),linetype=2,color='green')
+
+```
+
+
+#correlation
+```{r}
+print(cor.test(pf$friend_count,pf$age,method = 'pearson'))
+pf_s=subset(pf,age<=60)
+cor.test(pf_s$friend_count,pf_s$age,method='pearson')
+
+cor.test(pf_s$friend_count,pf_s$age,method='spearman')
+```
+
+
+#scatterplot
+```{r}
+ggplot(aes(x=pf$www_likes_received,y=pf$likes_received),data=pf)+
+  geom_point()+
+  xlim(0,quantile(pf$www_likes_received,.95))+
+  ylim(0,quantile(pf$likes_received,.95))+
+  geom_smooth(data=pf,method='lm',color='red')
+
+cor.test(pf$www_likes_received,pf$likes_received)
+```
+
+
+#more caution with correlation
+```{r}
+install.packages('alr3')
+library(alr3)
+data("Mitchell")
+names(Mitchell)
+ggplot(aes(x=Month,y=Temp),data=Mitchell)+
+  geom_point()+
+  scale_x_continuous(breaks=seq(0,203,12))
+
+cor.test(Mitchell$Month,Mitchell$Temp)
+
+ggplot(aes(x=Month,y=Temp),data=Mitchell)+
+  geom_line()
+```
+
+
+#noise
+#smoothing
+```{r}
+pf$age_with_months=pf$age+(1-pf$dob_month/12)
+library(dplyr)
+pf.age_with_months<-pf %>%
+  group_by(age_with_months) %>%
+  summarise(fc_mean=mean(friend_count),
+            fc_median=median(friend_count),
+            n=n())
+
+p1=ggplot(aes(x=age_with_months,y=fc_mean),data=subset(pf.age_with_months,age_with_months<71))+
+  geom_line(alpha=1/2)+
+  geom_smooth()
+p2=ggplot(aes(x=age,y=fc_mean),data=subset(pf.fc_by_age,age<71))+
+  geom_line(alpha=1/2)+
+  geom_smooth()
+
+p3=ggplot(aes(x=round(age/5)*5,y=fc_mean),data=subset(pf.fc_by_age,age<71))+
+  geom_line(alpha=1/2,stat="summary",fun.y=mean)
+library(gridExtra)
+grid.arrange(p1,p2,p3,ncol=1)
+```
+

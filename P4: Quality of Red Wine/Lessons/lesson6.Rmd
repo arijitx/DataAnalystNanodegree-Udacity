@@ -1,0 +1,20 @@
+---
+title: "lesson6"
+author: "Arijit Mukherjee"
+date: "16 July 2016"
+output: html_document
+---
+
+
+```{r}
+library('ggplot2')
+data("diamonds")
+qplot(price, data = diamonds, geom = "freqpoly", binwidth = 1000,
+  colour = color)
+ggplot(aes(x=carat,y=price),data=diamonds)+
+  geom_point()+
+  xlim(0,quantile(diamonds$carat,.99))+
+  ylim(0,quantile(diamonds$price,.99))+
+  stat_smooth(method='lm')
+```
+

@@ -1,0 +1,72 @@
+---
+title: "Lesson5"
+author: "Arijit Mukherjee"
+date: "15 July 2016"
+output: html_document
+---
+```{r}
+library(ggplot2)
+pf=read.csv('pseudo_facebook.tsv',sep='\t')
+library(dplyr)
+pf.by_age_gender<-pf %>%
+  filter(!is.na(gender))%>%
+  group_by(age,gender) %>%
+  summarise(fc_mean=mean(friend_count),
+            fc_median=median(friend_count),
+            n=n())%>%
+ungroup()
+pf.by_age_gender
+
+ggplot(aes(x=age,y=fc_median,color=gender),data=pf.by_age_gender)+
+  geom_line()
+```
+
+
+#reshape2
+```{r}
+install.packages('reshape2')
+library(reshape2)
+pf.by_age_gender.wide=dcast(pf.by_age_gender,
+                            age~gender,
+                            value.var='fc_median')
+pf.by_age_gender.wide
+```
+
+#ratioPloting
+```{r}
+ggplot(aes(x=age,y=female/male,color='red'),data=pf.by_age_gender.wide)+
+  geom_line()+
+  geom_hline(aes(yintercept=1),linetype=3)
+
+```
+
+
+#yearJoined
+```{r}
+pf$year_joined=floor(2014 - pf$tenure / 365)
+pf$year_joined.bucket=cut(pf$year_joined,c(2004,2009,2011,2012,2014))
+table(pf$year_joined.bucket)
+
+ggplot(aes(x=age,y=friend_count),data=subset(pf,!is.na(pf)))+
+  geom_line(aes(color=year_joined.bucket),fun.y=mean,stat='summary')+
+  geom_line(fun.y=mean,stat='summary',linetype=2)
+
+```
+
+
+#friendShip_initiated_perday
+```{r}
+ggplot(aes(x=tenure,y=friendships_initiated/tenure),data=subset(pf,!is.na(pf) & pf$tenure>=1))+
+  geom_line(aes(color=year_joined.bucket),fun.y=mean,stat='summary')
+
+  
+```
+
+#smothing
+```{r}
+ggplot(aes(x=tenure,y=friendships_initiated/tenure),
+       data=subset(pf, pf$tenure>=1))+
+  geom_smooth(aes(color=year_joined.bucket))
+
+```
+

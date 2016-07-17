@@ -1,0 +1,57 @@
+---
+title: "Lesson 3"
+author: "Arijit Mukherjee"
+date: "15 July 2016"
+output: html_document
+---
+```{r}
+pf_data=read.csv('pseudo_facebook.tsv',sep='\t')
+head(pf_data)
+library(ggplot2)
+qplot(data=subset(pf_data,!is.na(gender)),x=friend_count,xlim = c(0,1000),binwidth=25)+
+  facet_wrap(~gender)
+```
+
+```{r}
+by(pf_data$friend_count,pf_data$gender,summary)
+
+```
+
+```{r}
+library(gridExtra)
+summary(pf_data$friend_count)
+summary(log10(pf_data$friend_count+1))
+
+p1=qplot(data = pf_data,x=friend_count)
+p2=qplot(data = pf_data,x=friend_count+1)+scale_x_log10()
+p3=qplot(data = pf_data,x=friend_count+1)+scale_x_sqrt()
+grid.arrange(p1, p2, p3, ncol=1)
+
+```
+
+```{r}
+qplot(data=subset(pf_data,!is.na(gender)),x=www_likes,geom = 'freqpoly',color=gender)+
+  scale_x_log10()
+by(pf_data$www_likes,pf_data$gender,sum)
+
+```
+```{r}
+qplot(data=subset(pf_data,!is.na(gender)),x=gender,y=friend_count,geom = 'boxplot',ylim=c(0,1000))+
+  facet_wrap(~gender)
+
+
+qplot(data=subset(pf_data,!is.na(gender)),x=gender,y=friend_count,geom = 'boxplot')+
+  coord_cartesian(ylim=c(0,250))
+
+qplot(data=subset(pf_data,!is.na(gender)),x=gender,y=friendships_initiated,geom = 'boxplot')+
+  coord_cartesian(ylim=c(0,150))
+
+by(pf_data$friendships_initiate,pf_data$gender,summary)
+```
+
+```{r}
+pf_data$mobile_checkin=factor(ifelse(pf_data$mobile_likes>0,1,0))
+
+```
+
+
