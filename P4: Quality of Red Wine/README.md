@@ -14,11 +14,11 @@ library(gridExtra)
 
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
-#directory - /home/zed/DataAnalystNanodegree-Udacity/P4/
+#directory - /home/zed/DataAnalystNanodegree-Udacity/P4: Quality of Red Wine/
 red_wine=read.csv('wineQualityReds.csv')
 summary(red_wine)
 str(red_wine)
-red_wine$quality=factor(red_wine$quality)
+
 ```
 
 # Univariate Plots Section
@@ -57,10 +57,25 @@ ggplot(aes(x=residual.sugar),data = red_wine)+
   geom_histogram()+
   ggtitle('Frequency of Residual Sugar')
 
+ggplot(aes(x=residual.sugar),data = red_wine)+
+  geom_histogram()+
+  ggtitle('Frequency of Residual Sugar')+
+  scale_x_log10()
+
 ggplot(aes(x=chlorides),data = red_wine)+
   geom_histogram()+
   ggtitle('Frequency of Chlorides')
 
+ggplot(aes(x=chlorides),data = red_wine)+
+  geom_histogram()+
+  ggtitle('Frequency of Chlorides')+
+  scale_x_log10()
+```
+
+Residual Sugar looks Skewed adding a log10() transform wont change much 
+on the other hand Cholrides distribution looks skewed but adding a log10 transform makes it normal distributed with a right tail
+
+```{r echo=FALSE , warning=FALSE ,message=FALSE}
 ggplot(aes(x=free.sulfur.dioxide),data = red_wine)+
   geom_histogram()+
   ggtitle('Frequency of free.sulfur.dioxide')
@@ -95,7 +110,6 @@ pH and Density is normally distrbuted
 ggplot(aes(x=sulphates),data = red_wine)+
   geom_histogram()+
   ggtitle('Frequency of sulphates')
-  scale_x_log10()
 
 ggplot(aes(x=sulphates),data = red_wine)+
   geom_histogram()+
@@ -159,14 +173,43 @@ Citric Acidity looked unusally distributed but adding log-transform it wont chan
 
 # Bivariate Plots Section
 
-```{r echo=FALSE, Bivariate_Plots}
-ggpairs(red_wine ,lower = list(continuous = wrap("points", shape = I('.'))), 
-  upper = list(combo = wrap("box", outlier.shape = I('.'))))
+```{r echo=FALSE ,warning=FALSE ,message=FALSE, fig.width=12, fig.height=12, Bivariate_Plots}
+pair1 <- data.frame(
+        Fixed_Acidity = red_wine$fixed.acidity,
+        Volati_leAcidity = red_wine$volatile.acidity,
+        Citric_Acid=red_wine$citric.acid,
+        Residual_Sugar=red_wine$residual.sugar,
+        Chlorides=red_wine$chlorides,
+        Free_Sulfur_Dioxide=red_wine$free.sulfur.dioxide,
+        Quality = red_wine$quality
+)
+ggpairs(pair1 ,
+        lower = list(continuous = wrap("points", shape = I('.'))), 
+        upper = list(combo = wrap("box", outlier.shape = I('.'))))
+
+pair2 <- data.frame(
+        Total_Sulfur_Dioxide = red_wine$total.sulfur.dioxide,
+        Density = red_wine$density,
+        pH=red_wine$pH,
+        Sulphates=red_wine$sulphates,
+        Alcohol=red_wine$alcohol,
+        Quality = red_wine$quality
+)
+ggpairs(pair2 ,
+        lower = list(continuous = wrap("points", shape = I('.'))), 
+        upper = list(combo = wrap("box", outlier.shape = I('.'))))
 ```
 
-## We can see that 
+We can see that 
+```{r echo=FALSE}
+cor.test(red_wine$quality,red_wine$alcohol)
+cor.test(red_wine$quality,red_wine$volatile.acidity)
+cor.test(red_wine$quality,red_wine$sulphates)
+cor.test(red_wine$quality,red_wine$citric.acid)
+```
+
 <br><br>
-**Alcohol (Corr : .475)**<br>
+**Alcohol (Corr : .476)**<br>
 **Volatile.Acidity (Corr : -.391)**<br>
 **Sulphates (Corr : .251)**<br>
 **Citric.Acid (Corr : .226)**<br>
@@ -212,7 +255,15 @@ ggplot(data=red_wine,aes(x=pH,y=fixed.acidity))+
   ggtitle('pH Vs Fixed Acidity')+
   xlab('pH')+
   ylab('Fixed Acidity g / dm^3')
+
+
 ```
+```{r echo=FALSE}
+cor.test(red_wine$pH,red_wine$fixed.acidity)
+cor.test(red_wine$pH,red_wine$citric.acid)
+```
+
+From the above box plots its clear that The attributes Alcohol and Volatile Acidity contributes the most in Quality while Citric Acid and Sulphates also have some effects on the Quality. One intersting effect is on pH as it measures the level of acidity of a solution we can see pH has high correlation values with Fixed Acidity and Citric Acid.
 
 # Bivariate Analysis
 
@@ -243,24 +294,30 @@ pH and Fixed.Acidity<br>
 # Multivariate Plots Section
 
 ```{r echo=FALSE, Multivariate_Plots}
-
+red_wine$quality=factor(red_wine$quality)
 ggplot(data=red_wine,aes(x=alcohol,y=volatile.acidity,colour=quality))+
   geom_point()+
   ggtitle('Quality By Alcohol and Volatile Acidity')+
   xlab('Alcohol % by Volume')+
-  ylab('Volatile Acidity g / dm^3')
+  ylab('Volatile Acidity g / dm^3')+
+  scale_color_brewer(palette = "Reds") + 
+  theme_dark()
 
 ggplot(data=red_wine,aes(x=alcohol,y=citric.acid,colour=quality))+
   geom_point()+
   ggtitle('Quality By Alcohol and Citric Acid')+
   xlab('Alcohol % by Volume')+
-  ylab('Citric Acid g / dm^3')
+  ylab('Citric Acid g / dm^3')+
+  scale_color_brewer(palette = "Reds") + 
+  theme_dark()
 
 ggplot(data=red_wine,aes(x=volatile.acidity,y=citric.acid,colour=quality))+
   geom_point()+
   ggtitle('Quality By Alcohol and Citric Acid')+
   xlab('Volatile Acidity g / dm^3')+
-  ylab('Citric Acid g / dm^3')
+  ylab('Citric Acid g / dm^3')+
+  scale_color_brewer(palette = "Reds") + 
+  theme_dark()
 
 
 ```
@@ -273,7 +330,9 @@ ggplot(data=red_wine_sub,aes(x=alcohol,y=volatile.acidity,colour=quality))+
   geom_point()+
    ggtitle('Wine Samples Quality By Alcohol and Volatile Acidity')+
   xlab('Alcohol % By Volume')+
-  ylab('Volatile Acidity g / dm^3')
+  ylab('Volatile Acidity g / dm^3')+
+  scale_color_brewer(palette = "Reds") + 
+  theme_dark()
 ```
 
 Now from the visualization its clear that the lower-right corner samples are of high quality and the upper-right part samples are of low quality .
@@ -284,13 +343,17 @@ ggplot(data=red_wine_sub,aes(x=alcohol,y=citric.acid,colour=quality))+
   geom_point()+
    ggtitle('Wine Samples Quality By Citric Acid And Alcohol ')+
   xlab('Alcohol % By Volume')+
-  ylab('Citric Acid g / dm^3')
+  ylab('Citric Acid g / dm^3')+
+  scale_color_brewer(palette = "Reds") + 
+  theme_dark()
 
 ggplot(data=red_wine_sub,aes(x=alcohol,y=sulphates,colour=quality))+
   geom_point()+
   ggtitle('Wine Samples Quality By Sulphates And Alcohol ')+
   xlab('Alcohol % By Volume')+
-  ylab('Sulphates g / dm^3')
+  ylab('Sulphates g / dm^3')+
+  scale_color_brewer(palette = "Reds") + 
+  theme_dark()
 
 ```
 
@@ -300,17 +363,21 @@ Now lets draw two visualization to relate Quality-Citric.Acid-Alcohol-Volatile.A
 
 ggplot(data=red_wine_sub,
   aes(x=alcohol,y=citric.acid,colour=quality,size=volatile.acidity))+
-  geom_point()+
+  geom_point(alpha=.5)+
   ggtitle('Wine Samples Quality By Citric Acid Alcohol and Volatile Acidity')+
   xlab('Alcohol % By Volume')+
-  ylab('Citric Acid g / dm^3')
+  ylab('Citric Acid g / dm^3')+
+  scale_color_brewer(palette = "Reds") + 
+  theme_dark()
 
 ggplot(data=red_wine_sub,
   aes(x=alcohol,y=sulphates,colour=quality,size=volatile.acidity))+
-  geom_point()+
+  geom_point(alpha=.5)+
   ggtitle('Wine Samples Quality By Sulphates Alcohol and Volatile Acidity')+
   xlab('Alcohol % By Volume')+
-  ylab('Sulphates g / dm^3')
+  ylab('Sulphates g / dm^3')+
+  scale_color_brewer(palette = "Reds") + 
+  theme_dark()
 
 ```
 
@@ -360,58 +427,28 @@ p2=ggplot(data=red_wine,aes(x=quality,y=volatile.acidity))+
   xlab('Quality')+
   ylab('Volatile Acidity g / dm^3')
 
-p3=ggplot(data=red_wine,aes(x=quality,y=sulphates))+
-  geom_boxplot(stat='boxplot',aes(group=quality))+
-  ggtitle('Box Plot Quality by Sulphates')+
-  xlab('Quality')+
-  ylab('Sulphates g / dm^3')
 
-p4=ggplot(data=red_wine,aes(x=quality,y=citric.acid))+
-  geom_boxplot(stat='boxplot',aes(group=quality))+
-  ggtitle('Box Plot Quality by Citric Acid')+
-  xlab('Quality')+
-  ylab('Citric Acid g / dm^3')
-
-#between pH and other fixed.acidity and citric.acid
-p5=ggplot(data=red_wine,aes(x=pH,y=citric.acid))+
-  geom_point()+
-  geom_smooth(method='lm')+
-  ggtitle('pH Vs Citric Acid')+
-  xlab('pH')+
-  ylab('Citric Acid g / dm^3')
-
-p6=ggplot(data=red_wine,aes(x=pH,y=fixed.acidity))+
-  geom_point()+
-  geom_smooth(method='lm')+
-  ggtitle('pH Vs Fixed Acidity')+
-  xlab('pH')+
-  ylab('Fixed Acidity g / dm^3')
-
-grid.arrange(p1,p2,p3,p4,p5,p6,ncol=2)
+grid.arrange(p1,p2,ncol=1)
 
 ```
 
 ### Description Two
 
-The above plot shows the 4 main component that have high effects on the quality . while there are a lot of Outliers in the Sulphates. The other 3 Alchol - Volatile.Acidity- Citric.Acid determines the quality of the wine and then we show how pH have high correlation with Citric.Acid and Fixed.Acidity. 
+The above plot shows the 2 main component that have high effects on the quality . The Alchol - Volatile.Acidity determines the quality of the wine . The high Quality Wines have relatively high mean of Alcohol % than the lower quality ones and The low Quality wines have much higher mean of Volatile Acidity than the High Quality Wines .
 
 ### Plot Three
 
-```{r echo=FALSE, Plot_Three}
-ggplot(data=subset(
-  red_wine_sub,red_wine_sub$quality!=7 & red_wine_sub$quality!=4),
-  aes(x=alcohol,y=citric.acid,colour=quality,size=volatile.acidity))+
-  geom_point()+
-  ggtitle('The Best Vs The Worst Wine Samples')+
-  xlab('Alcohol % By Volume')+
-  ylab('Citric Acid g / dm^3')
+```{r echo=FALSE, Plot_Three, fig.width=12}
 
 ggplot(data=red_wine_sub,
   aes(x=alcohol,y=citric.acid,colour=quality,size=volatile.acidity))+
-  geom_point()+
+  geom_point(alpha=.5)+
   ggtitle('Wine Samples Quality By Citric Acid Alcohol and Volatile Acidity')+
   xlab('Alcohol % By Volume')+
-  ylab('Citric Acid g / dm^3')
+  ylab('Citric Acid g / dm^3')+
+  scale_color_brewer(palette = "Reds") + 
+  scale_size_continuous(name="Volatile Acidity % By Volume")+
+  theme_dark()
 ```
 
 ### Description Three
@@ -425,3 +462,6 @@ Any wine sample with alcohol % greater than 1.1 and citric acid level .25 is gra
 # Reflection
 
 In the dataset there were 1599 observation in which we tried to find the effect of chemical factors on the quality of the wine . Alcohol and Volatile.Acidity has the strongest effect on the quality of a wine . While the hihg level of Alchol indicates a high quality wine on the other hand high level of Volatile.Acidity can make the quality of the wine degrade. Quality is proportional to the level of alcohol and The Quality is inversly proportional to the Level of Volatile Acidity . The next dominant factors are the Citric.Acid and Sulphates . Citric.Acid have some effects on the quality of wine but high Volatile.Acidity can degrade the quality of wine even with high level of Citric.Acid . 
+Firstly we selected the main dependent Variable The Quality and we tried to find which attributes have most effects to the Quality . Finally we narrowed down to 3 Variables Alcohol,Volatile Acidity and Citric Acid . We used correlation between them to find the effects of these attributes on Quality.
+The most challengeing part of the dataset is The Quality is a sensory measurement which can change drastically from human to human as the rating of quality is given by Humans .
+In the future we can train a Linear Model to predict the quality of a Wine from various attributes like the Alcohol,Volatile Acidity,Citric Acid and Sulphates.
