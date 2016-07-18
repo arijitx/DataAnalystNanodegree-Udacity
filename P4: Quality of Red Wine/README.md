@@ -200,7 +200,11 @@ ggpairs(pair2 ,
         upper = list(combo = wrap("box", outlier.shape = I('.'))))
 ```
 
+
+From the above pairs we can see a scatter plot for each pair and a Correlation Coefficient for each pair . Here we select 4 attributes which have high correlation with Quality and will discuss them furthur . These four attributes are Alcohol,Volatile Acidity , Citric Acid and Sulphates .
+
 We can see that 
+
 ```{r echo=FALSE}
 cor.test(red_wine$quality,red_wine$alcohol)
 cor.test(red_wine$quality,red_wine$volatile.acidity)
@@ -208,7 +212,10 @@ cor.test(red_wine$quality,red_wine$sulphates)
 cor.test(red_wine$quality,red_wine$citric.acid)
 ```
 
+The Correlation of these four attributes with Quality is as follows
+
 <br><br>
+
 **Alcohol (Corr : .476)**<br>
 **Volatile.Acidity (Corr : -.391)**<br>
 **Sulphates (Corr : .251)**<br>
@@ -240,7 +247,15 @@ ggplot(data=red_wine,aes(x=quality,y=citric.acid))+
   ggtitle('Box Plot Quality by Citric Acid')+
   xlab('Quality')+
   ylab('Citric Acid g / dm^3')
+```
 
+For Alcohol the mean is relatively higher for the High Quality wines than the lower quality wines.
+In case of Volatile Acidity we can see a distinct feature that for the low Quality Wines Volatile Acidity is much higher that of the medium and High Quality Wines
+
+The mean of Sulphates and Citric Acid  are in high both cases for high Quality Wines .
+From the above box plots its clear that The attributes Alcohol and Volatile Acidity contributes the most in Quality while Citric Acid and Sulphates also have some effects on the Quality.
+
+``` {r echo=FALSE}
 #between pH and other fixed.acidity and citric.acid
 ggplot(data=red_wine,aes(x=pH,y=citric.acid))+
   geom_point()+
@@ -263,7 +278,7 @@ cor.test(red_wine$pH,red_wine$fixed.acidity)
 cor.test(red_wine$pH,red_wine$citric.acid)
 ```
 
-From the above box plots its clear that The attributes Alcohol and Volatile Acidity contributes the most in Quality while Citric Acid and Sulphates also have some effects on the Quality. One intersting effect is on pH as it measures the level of acidity of a solution we can see pH has high correlation values with Fixed Acidity and Citric Acid.
+ One intersting effect is on pH as it measures the level of acidity of a solution we can see pH has high correlation values with Fixed Acidity and Citric Acid.
 
 # Bivariate Analysis
 
@@ -294,6 +309,7 @@ pH and Fixed.Acidity<br>
 # Multivariate Plots Section
 
 ```{r echo=FALSE, Multivariate_Plots}
+red_wine$quality_i=red_wine$quality
 red_wine$quality=factor(red_wine$quality)
 ggplot(data=red_wine,aes(x=alcohol,y=volatile.acidity,colour=quality))+
   geom_point()+
@@ -403,14 +419,16 @@ With much high level of Alcohol and low level of Citric.Acid some of the samples
 ggplot(aes(x=quality,fill=quality),data = red_wine)+
   geom_bar()+
   ggtitle('Frequency of Quality ')+
-  xlab('Quality')
+  xlab('Quality')+
+  scale_fill_brewer(palette = "Reds") + 
+  theme_dark()
 
 summary(red_wine$quality,group=quality)
 ```
 
 ### Description One
 
-In the total 1599 samples most of the samples were of medium quality. There were only 10 samples of quality 3 and only 18 samples of quality 8 most of them were in either 5 or 6 
+In the total 1599 samples most of the samples were of medium quality. There were only 10 samples of quality 3 and only 18 samples of quality 8 most of them were in either 5 or 6. The Quality is approximately normally distributed .  
 
 ### Plot Two
 
@@ -429,6 +447,8 @@ p2=ggplot(data=red_wine,aes(x=quality,y=volatile.acidity))+
 
 
 grid.arrange(p1,p2,ncol=1)
+cor.test(red_wine$quality_i,red_wine$alcohol)
+cor.test(red_wine$quality_i,red_wine$volatile.acidity)
 
 ```
 
@@ -447,7 +467,7 @@ ggplot(data=red_wine_sub,
   xlab('Alcohol % By Volume')+
   ylab('Citric Acid g / dm^3')+
   scale_color_brewer(palette = "Reds") + 
-  scale_size_continuous(name="Volatile Acidity % By Volume")+
+  scale_size_continuous(name="Volatile Acidity g / dm^3")+
   theme_dark()
 ```
 
