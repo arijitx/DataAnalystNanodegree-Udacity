@@ -76,7 +76,7 @@ Here I excluded 4 features `from_messages` , `from_poi_to_this_person` , `from_t
 
 
  
-<br> <img src="plots/p4.png"/><br>
+
 Now we select the features with score at least 15 .<br>
 
 *The Top Five Features*
