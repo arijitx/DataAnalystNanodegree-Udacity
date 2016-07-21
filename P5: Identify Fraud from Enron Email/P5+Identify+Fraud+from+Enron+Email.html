@@ -11799,7 +11799,9 @@ div#notebook {
  'total_stock_value': 585062}
 </code></pre>
 <p><br></p>
-<p><strong>Outliers</strong><br>
+<p><strong>Missing Values</strong><br>
+We can see for the sample datapoint some the fields are marked as 'NaN' which implies we don't have any valid data for that field . Here to remove 'NaN' values from the final training set we will replace the 'NaN' with 0.0 and if for a particular row all the selected features have 'NaN' values then we have to discard that row for training .
+<strong>Outliers</strong><br>
 <br>
 <img src="plots/p1.png"/><br>
 After I plot a scatterplot using 'salary' and 'bonus' I easily detect the outlier with key 'TOTAL' which stores the total value of the all the data points . So I just delete the 'TOTAL' data point from our dataset.<br>
@@ -11823,19 +11825,23 @@ fraction_from_messages=from_poi_to_this_person/to_messages
 
 </code></pre>
 <p><img src="plots/p3.png"/><br>
-These to fields store the fraction of the emails send to poi and received from poi.<br></p>
-<p><strong>Selecting Best Five Features</strong><br>
-There are 20 + 2 fields now, but some of the fields don't have any effect on whether the person is a Person of Interest or not .Now I chose 13 features from the 22 and pass them to <em>sklearn</em> <strong>SelectKBest()</strong> where <strong>f_classif</strong> is the scoring algorithm.<br></p>
+These to fields store the fraction of the emails send to poi and received from poi.<br>
+Here I used these two features <code>fraction_to_messages</code> and <code>fraction_from_messages</code> because these two features basically represent the 4 features <code>from_messages</code> , <code>from_poi_to_this_person</code> , <code>from_this_person_to_poi</code> , <code>to_messages</code> in a more scaled way . <br>
+<strong>Selecting Best Five Features</strong><br>
+There are 20 + 2 fields now, but some of the fields don't have any effect on whether the person is a Person of Interest or not .Now I chose 17 features from the 22 and pass them to <em>sklearn</em> <strong>SelectKBest()</strong> where <strong>f_classif</strong> is the scoring algorithm.<br>
+Here I excluded 4 features <code>from_messages</code> , <code>from_poi_to_this_person</code> , <code>from_this_person_to_poi</code> , <code>to_messages</code> because I use <code>fraction_to_messages</code> and <code>fraction_from_messages</code> which represent the same 4 features . And I removed <code>email_address</code> .<br></p>
 
-<pre><code>'poi'                     'salary'                   'bonus'        
-'deferred_income'         'director_fees'            'exercised_stock_options'  
-'expenses'                'fraction_from_poi'        'fraction_to_poi'
-'loan_advances'           'long_term_incentive'      'restricted_stock'
-'total_payments'          'total_stock_value'
+<pre><code>'poi'                       'salary'                   'bonus'        
+'deferred_income'           'director_fees'            'exercised_stock_options'  
+'expenses'                  'fraction_from_poi'        'fraction_to_poi'
+'loan_advances'             'long_term_incentive'      'restricted_stock'
+'total_payments'            'total_stock_value'        'deferral_payments'
+'restricted_stock_deferred' 'shared_receipt_with_poi'
 
 </code></pre>
 <p><em>Scores of Each Feature</em><br></p>
-<p><br> <img src="plots/p4.png"/><br></p>
+<p><br> <img src="plots/p4.png"/><br>
+Now we select the features with score at least 15 .<br></p>
 <p><em>The Top Five Features</em></p>
 
 <pre><code>Feature Name                  Score
@@ -11899,7 +11905,8 @@ F1_score  0.0
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="4.Algorithm-Parameter-Tuning">4.Algorithm Parameter Tuning<a class="anchor-link" href="#4.Algorithm-Parameter-Tuning">&#182;</a></h2><p>Using Sklearn <strong>GridSearchCV</strong> I found the best parameters for Decision Tree are</p>
+<h2 id="4.Algorithm-Parameter-Tuning">4.Algorithm Parameter Tuning<a class="anchor-link" href="#4.Algorithm-Parameter-Tuning">&#182;</a></h2><p>Tuning a machine learning algorithm is important because it is not possible to estimate the parameters for a particular model for optimum performance. Here we use F1_score to detect the most optimum parameters for our model.<br></p>
+<p>Using Sklearn <strong>GridSearchCV</strong> I found the best parameters for Decision Tree are</p>
 <hr>
 <p><strong>Decision Tree Performance</strong></p>
 
@@ -11944,7 +11951,9 @@ Mean Recall: 0.34500
 
 </code></pre>
 <p>The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.<br>
-The recall is intuitively the ability of the classifier to find all the positive samples.<br></p>
+In our project Precision is the ability of the classifier not to predict a person who is not a POI as a POI <br>
+The recall is intuitively the ability of the classifier to find all the positive samples.<br>
+In our project Recall is the ablity of the classifier to find all the POIs . <br></p>
 <p>A system with high recall but low precision returns many results, but most of its predicted labels are incorrect when compared to the training labels. A system with high precision but low recall is just the opposite, returning very few results, but most of its predicted labels are correct when compared to the training labels. An ideal system with high precision and high recall will return many results, with all results labeled correctly.</p>
 
 </div>

@@ -39,6 +39,8 @@ The dataset have information of *146 rows* each having *21 fields* . There are a
      'total_stock_value': 585062}
  <br>
  
+**Missing Values**<br>
+We can see for the sample datapoint some the fields are marked as 'NaN' which implies we don't have any valid data for that field . Here to remove 'NaN' values from the final training set we will replace the 'NaN' with 0.0 and if for a particular row all the selected features have 'NaN' values then we have to discard that row for training .
 **Outliers**<br>
 <br>
 <img src="plots/p1.png"/><br>
@@ -57,20 +59,25 @@ We add two new fields to each of our datapoints. **fraction_to_messages** and **
     
  <img src="plots/p3.png"/><br>
 These to fields store the fraction of the emails send to poi and received from poi.<br>
-
+Here I used these two features `fraction_to_messages` and `fraction_from_messages` because these two features basically represent the 4 features `from_messages` , `from_poi_to_this_person` , `from_this_person_to_poi` , `to_messages` in a more scaled way . <br>
 **Selecting Best Five Features**<br>
-There are 20 + 2 fields now, but some of the fields don't have any effect on whether the person is a Person of Interest or not .Now I chose 13 features from the 22 and pass them to *sklearn* **SelectKBest()** where **f_classif** is the scoring algorithm.<br>
+There are 20 + 2 fields now, but some of the fields don't have any effect on whether the person is a Person of Interest or not .Now I chose 17 features from the 22 and pass them to *sklearn* **SelectKBest()** where **f_classif** is the scoring algorithm.<br>
+Here I excluded 4 features `from_messages` , `from_poi_to_this_person` , `from_this_person_to_poi` , `to_messages` because I use `fraction_to_messages` and `fraction_from_messages` which represent the same 4 features . And I removed `email_address` .<br>
 
-    'poi'                     'salary'                   'bonus'        
-    'deferred_income'         'director_fees'            'exercised_stock_options'  
-    'expenses'                'fraction_from_poi'        'fraction_to_poi'
-    'loan_advances'           'long_term_incentive'      'restricted_stock'
-    'total_payments'          'total_stock_value'
+
+    'poi'                       'salary'                   'bonus'        
+    'deferred_income'           'director_fees'            'exercised_stock_options'  
+    'expenses'                  'fraction_from_poi'        'fraction_to_poi'
+    'loan_advances'             'long_term_incentive'      'restricted_stock'
+    'total_payments'            'total_stock_value'        'deferral_payments'
+    'restricted_stock_deferred' 'shared_receipt_with_poi'
 
 *Scores of Each Feature*<br>
 
-<br> <img src="plots/p4.png"/><br>
 
+ 
+<br> <img src="plots/p4.png"/><br>
+Now we select the features with score at least 15 .<br>
 
 *The Top Five Features*
 
@@ -118,6 +125,8 @@ Now I used to Sklearn *MinMaxScaler()* to scale my best five features in the ran
 Here we can See **GaussianNB** performs better than **Decision Tree**. So we will use **GaussianNB** for our project. 
 
  ##  4.Algorithm Parameter Tuning
+ 
+Tuning a machine learning algorithm is important because it is not possible to estimate the parameters for a particular model for optimum performance. Here we use F1_score to detect the most optimum parameters for our model.<br>
 
 Using Sklearn **GridSearchCV** I found the best parameters for Decision Tree are
 ****
@@ -151,7 +160,9 @@ Here we use the  **StratifiedShuffleSplit** to shuffle our dataset for 1000 fold
     Mean Recall: 0.34500
     
 The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.<br>
+In our project Precision is the ability of the classifier not to predict a person who is not a POI as a POI <br>
 The recall is intuitively the ability of the classifier to find all the positive samples.<br>
+In our project Recall is the ablity of the classifier to find all the POIs . <br>
 
 A system with high recall but low precision returns many results, but most of its predicted labels are incorrect when compared to the training labels. A system with high precision but low recall is just the opposite, returning very few results, but most of its predicted labels are correct when compared to the training labels. An ideal system with high precision and high recall will return many results, with all results labeled correctly.
 
