@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  </style>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+    <script type="text/javascript">
+    var myChart
+      function ChangeGraph(){
+           myChart.addSeries("handedness", dimple.plot.bubble)
+          .aggregate = dimple.aggregateMethod.avg;
+          myChart.draw();
+      }
+      function draw(data) {
+      
+      /*
+        D3.js setup code
+      */
+
+          "use strict";
+          var margin = 75,
+              width = 1000 - margin,
+              height = 550 - margin;
+
+          
+          //adding svg for chart1 
+          var svg = d3.select("body")
+            .append("svg")
+              .attr("width", width + margin)
+              .attr("height", height + margin)
+            .append('g')
+                .attr('class','chart');
+
+          
+          //Adding svg for chart2
+          var svg2 = d3.select("body")
+            .append("svg")
+              .attr("width", width + margin)
+              .attr("height", height + margin)
+            .append('g')
+                .attr('class','chart');
+           
+
+      /*
+        Dimple.js Chart construction code
+      */
+          //chart1
+          myChart = new dimple.chart(svg, data);
+
+          //adding axis to chart
+          var x=myChart.addCategoryAxis("x", "height");
+          var y=myChart.addMeasureAxis("y", "avg");
+          var z=myChart.addMeasureAxis("z", "HR");
+          //adding axis titles
+          x.title="Height of a Player in Inchs";
+          y.title="Average of a Player";
+          y.tickFormat='.2f';
+          //adding the axis to create a bubble plot
+          myChart.addSeries("handedness", dimple.plot.bubble)
+          .aggregate = dimple.aggregateMethod.avg;
+          
+          //adding auto transitions for different handedness
+          var story = myChart.setStoryboard("handedness");
+          story.frameDuration = 3000;
+          //adding legends and drawing the chart
+          myChart.addLegend(800, 100, 60, 300,"right");
+          myChart.draw();
+
+          //adding title to the chart
+          svg.append("text")
+          .attr("x", myChart._xPixels() + myChart._widthPixels() / 2)
+          .attr("y", myChart._yPixels() - 20)
+          .style("text-anchor", "middle")
+          .style("font-family", "sans-serif")
+          .style("font-weight", "bold")
+          .text(" Average and Home Runs Vs Height of Player");
+
+
+          //Chart2
+          myChart = new dimple.chart(svg2, data);
+
+          //adding axis to chart
+          var x=myChart.addCategoryAxis("x", "weight");
+          var y=myChart.addMeasureAxis("y", "avg");
+          var z=myChart.addMeasureAxis("z", "HR");
+
+          
+          //adding titles to axis 
+          x.title="Weight of a Player in Pounds";
+          y.title="Average of a Player";
+          y.tickFormat='.2f';
+          
+          //creating a bubble plot
+          myChart.addSeries("handedness", dimple.plot.bubble)
+          .aggregate = dimple.aggregateMethod.avg;
+          
+          //adding handedness grouped transition
+          var story = myChart.setStoryboard("handedness");
+          story.frameDuration = 3000;
+
+          //adding legend and drawing the chart
+          myChart.addLegend(800, 100, 60, 300,"right");
+          myChart.draw();
+
+          //adding title to the chart
+          svg2.append("text")
+          .attr("x", myChart._xPixels() + myChart._widthPixels() / 2)
+          .attr("y", myChart._yPixels() - 20)
+          .style("text-anchor", "middle")
+          .style("font-family", "sans-serif")
+          .style("font-weight", "bold")
+          .text(" Average and Home Runs Vs Weight of Player");
+
+
+          
+        };
+      </script>
+  </head>
+  <title>P6 Data Vizualization</title>
+<body>
+  <script type="text/javascript">
+  /*
+    Use D3 (not dimple.js) to load the TSV file
+    and pass the contents of it to the draw function
+    */
+  d3.csv("baseball_data.csv", draw);
+  </script>
+
+</body>
+</html>
